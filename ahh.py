@@ -53,11 +53,7 @@ with st.sidebar:
     else:
         st.session_state.current_page = "视频中心"
     
-    st.markdown("---")
-    st.markdown("💡 **使用提示**")
-    st.markdown("• 选择上方页面进行切换")
-    st.markdown("• 数据会自动保存")
-    st.markdown("• 支持响应式布局")
+    
 
 # 根据选择显示不同页面
 if st.session_state.current_page == "美食数据仪表盘":
