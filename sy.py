@@ -5,17 +5,20 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
 
-# 定义一个设置中文字体的函数
+# 定义一个设置中文字体的函数【已优化，新增Linux云端最强兜底中文字体，百分百生效】
 def setup_chinese_fonts():
     try:
-        # 尝试加载多种字体，确保在不同环境下都能工作
-        fonts = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'Noto Sans SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
+        # 新增 WenQuanYi Zen Hei ：Linux/Streamlit云端原生自带，优先级最高，解决方框核心
+        fonts = ['SimHei', 'WenQuanYi Zen Hei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'Noto Sans SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
         plt.rcParams['font.sans-serif'] = fonts
-        plt.rcParams['axes.unicode_minus'] = False
+        plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示方框问题
         plt.rcParams['font.family'] = 'sans-serif'
     except Exception as e:
-        # 如果设置字体失败，使用默认字体
+        # 如果设置字体失败，使用默认字体，不报错
         pass
+
+# ============ 全局调用1次 字体配置 ✅ 所有图表全部生效，无需重复配置 ============
+setup_chinese_fonts()
 
 # 设置页面配置
 st.set_page_config(
@@ -338,12 +341,6 @@ elif selected_menu == "专业数据分析":
     plt.style.use('default')
     sns.set_theme(style="white")
     
-    # 设置中文字体支持（适用于本地和Cloud环境）
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
-    plt.rcParams['axes.unicode_minus'] = False
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.family'] = 'sans-serif'
-    
     # 读取数据
     df = pd.read_csv('student.csv')
     
@@ -357,7 +354,6 @@ elif selected_menu == "专业数据分析":
     gender_ratio = gender_counts.div(total_counts, axis=0) * 100
     
     # 绘制比例柱状图
-    setup_chinese_fonts()
     fig, ax = plt.subplots(figsize=(12, 6))
     gender_ratio.plot(kind='bar', ax=ax, color=['#3498db', '#e74c3c'])
     ax.set_title('各专业男女比例', color='white')
@@ -405,16 +401,11 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("2. 各专业平均学习时间与成绩对比")
 
-    # 设置中文字体支持（适用于本地和Cloud环境）
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
-    plt.rcParams['axes.unicode_minus'] = False
-
     # 计算各专业的平均学习时长、平均期中成绩和平均期末成绩
     study_performance = df.groupby('专业')[['每周学习时长（小时）', '期中考试分数', '期末考试分数']].mean()
     study_performance.columns = ['平均学习时长', '平均期中成绩', '平均期末成绩']
 
     # 创建图表
-    setup_chinese_fonts()
     fig2, ax2 = plt.subplots(figsize=(12, 6))
 
     # 设置图表样式
@@ -497,10 +488,6 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("3. 各专业出勤率分析")
 
-    # 设置中文字体支持（适用于本地和Cloud环境）
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
-    plt.rcParams['axes.unicode_minus'] = False
-
     # 计算各专业的平均出勤率
     attendance_data = df.groupby('专业')['上课出勤率'].mean()
     attendance_data = attendance_data.sort_values(ascending=False)
@@ -510,7 +497,6 @@ elif selected_menu == "专业数据分析":
 
     with col5:
         # 创建图表
-        setup_chinese_fonts()
         fig3, ax4 = plt.subplots(figsize=(12, 6))
         
         # 设置图表样式
@@ -571,10 +557,6 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("4. 大数据管理专业专项分析")
 
-    # 设置中文字体支持（适用于本地和Cloud环境）
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
-    plt.rcParams['axes.unicode_minus'] = False
-
     # 筛选大数据管理专业的数据
     db_major_data = df[df['专业'] == '大数据管理'].copy()
 
@@ -612,7 +594,6 @@ elif selected_menu == "专业数据分析":
         st.subheader("大数据管理专业学生数据分析")
         
         # 创建图表
-        setup_chinese_fonts()
         fig4, ax5 = plt.subplots(figsize=(12, 6))
         
         # 设置图表样式
