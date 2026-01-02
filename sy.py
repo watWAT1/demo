@@ -326,8 +326,8 @@ elif selected_menu == "专业数据分析":
     plt.style.use('default')
     sns.set_theme(style="white")
     
-    # 设置中文字体
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
+    # 设置中文字体支持
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
     
     # 读取数据
@@ -389,6 +389,10 @@ elif selected_menu == "专业数据分析":
     # 2. 各专业平均学习时间与成绩对比
     st.markdown("---")
     st.header("2. 各专业平均学习时间与成绩对比")
+
+    # 设置中文字体支持
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
 
     # 计算各专业的平均学习时长、平均期中成绩和平均期末成绩
     study_performance = df.groupby('专业')[['每周学习时长（小时）', '期中考试分数', '期末考试分数']].mean()
@@ -477,6 +481,10 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("3. 各专业出勤率分析")
 
+    # 设置中文字体支持
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
+
     # 计算各专业的平均出勤率
     attendance_data = df.groupby('专业')['上课出勤率'].mean()
     attendance_data = attendance_data.sort_values(ascending=False)
@@ -545,6 +553,10 @@ elif selected_menu == "专业数据分析":
     # 4. 大数据管理专业专项分析
     st.markdown("---")
     st.header("4. 大数据管理专业专项分析")
+
+    # 设置中文字体支持
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
 
     # 筛选大数据管理专业的数据
     db_major_data = df[df['专业'] == '大数据管理'].copy()
