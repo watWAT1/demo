@@ -326,8 +326,8 @@ elif selected_menu == "专业数据分析":
     plt.style.use('default')
     sns.set_theme(style="white")
     
-    # 设置中文字体支持
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
     
     # 读取数据
@@ -390,8 +390,8 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("2. 各专业平均学习时间与成绩对比")
 
-    # 设置中文字体支持
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
 
     # 计算各专业的平均学习时长、平均期中成绩和平均期末成绩
@@ -481,8 +481,8 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("3. 各专业出勤率分析")
 
-    # 设置中文字体支持
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
 
     # 计算各专业的平均出勤率
@@ -554,8 +554,8 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("4. 大数据管理专业专项分析")
 
-    # 设置中文字体支持
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'STXihei', 'WenQuanYi Micro Hei', 'sans-serif']
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
 
     # 筛选大数据管理专业的数据
