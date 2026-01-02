@@ -5,6 +5,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
 
+# 定义一个设置中文字体的函数
+def setup_chinese_fonts():
+    try:
+        # 尝试加载多种字体，确保在不同环境下都能工作
+        fonts = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'Noto Sans SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
+        plt.rcParams['font.sans-serif'] = fonts
+        plt.rcParams['axes.unicode_minus'] = False
+        plt.rcParams['font.family'] = 'sans-serif'
+    except Exception as e:
+        # 如果设置字体失败，使用默认字体
+        pass
+
 # 设置页面配置
 st.set_page_config(
     page_title="学生成绩分析与预测系统",
@@ -327,8 +339,10 @@ elif selected_menu == "专业数据分析":
     sns.set_theme(style="white")
     
     # 设置中文字体支持（适用于本地和Cloud环境）
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.family'] = 'sans-serif'
     
     # 读取数据
     df = pd.read_csv('student.csv')
@@ -343,6 +357,7 @@ elif selected_menu == "专业数据分析":
     gender_ratio = gender_counts.div(total_counts, axis=0) * 100
     
     # 绘制比例柱状图
+    setup_chinese_fonts()
     fig, ax = plt.subplots(figsize=(12, 6))
     gender_ratio.plot(kind='bar', ax=ax, color=['#3498db', '#e74c3c'])
     ax.set_title('各专业男女比例', color='white')
@@ -399,6 +414,7 @@ elif selected_menu == "专业数据分析":
     study_performance.columns = ['平均学习时长', '平均期中成绩', '平均期末成绩']
 
     # 创建图表
+    setup_chinese_fonts()
     fig2, ax2 = plt.subplots(figsize=(12, 6))
 
     # 设置图表样式
@@ -494,6 +510,7 @@ elif selected_menu == "专业数据分析":
 
     with col5:
         # 创建图表
+        setup_chinese_fonts()
         fig3, ax4 = plt.subplots(figsize=(12, 6))
         
         # 设置图表样式
@@ -594,7 +611,8 @@ elif selected_menu == "专业数据分析":
         # 创建图表区域
         st.subheader("大数据管理专业学生数据分析")
         
-        # 成绩分布直方图
+        # 创建图表
+        setup_chinese_fonts()
         fig4, ax5 = plt.subplots(figsize=(12, 6))
         
         # 设置图表样式
