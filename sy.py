@@ -4,21 +4,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
+import plotly.graph_objects as go
 
-# 定义一个设置中文字体的函数【已优化，新增Linux云端最强兜底中文字体，百分百生效】
+# 定义一个设置中文字体的函数
 def setup_chinese_fonts():
     try:
-        # 新增 WenQuanYi Zen Hei ：Linux/Streamlit云端原生自带，优先级最高，解决方框核心
-        fonts = ['SimHei', 'WenQuanYi Zen Hei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'Noto Sans SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
+        # 尝试加载多种字体，确保在不同环境下都能工作
+        fonts = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'Noto Sans SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
         plt.rcParams['font.sans-serif'] = fonts
-        plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示方框问题
+        plt.rcParams['axes.unicode_minus'] = False
         plt.rcParams['font.family'] = 'sans-serif'
     except Exception as e:
-        # 如果设置字体失败，使用默认字体，不报错
+        # 如果设置字体失败，使用默认字体
         pass
-
-# ============ 全局调用1次 字体配置 ✅ 所有图表全部生效，无需重复配置 ============
-setup_chinese_fonts()
 
 # 设置页面配置
 st.set_page_config(
@@ -341,6 +339,12 @@ elif selected_menu == "专业数据分析":
     plt.style.use('default')
     sns.set_theme(style="white")
     
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Heiti TC', 'Noto Sans CJK SC', 'DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.family'] = 'sans-serif'
+    
     # 读取数据
     df = pd.read_csv('student.csv')
     
@@ -353,43 +357,45 @@ elif selected_menu == "专业数据分析":
     # 计算男女比例（百分比）
     gender_ratio = gender_counts.div(total_counts, axis=0) * 100
     
-    # 绘制比例柱状图
-    fig, ax = plt.subplots(figsize=(12, 6))
-    gender_ratio.plot(kind='bar', ax=ax, color=['#3498db', '#e74c3c'])
-    ax.set_title('各专业男女比例', color='white')
-    ax.set_xlabel('专业', color='white')
-    ax.set_ylabel('比例 (%)', color='white')
-    ax.tick_params(axis='x', colors='white', rotation=0)
-    ax.tick_params(axis='y', colors='white')
+    # 绘制比例柱状图 - 使用Plotly
+    fig = go.Figure()
     
-    # 调整x轴标签为横向显示
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center')
-    ax.legend(title='性别', labels=['男', '女'], frameon=False)
-    for text in ax.get_legend().get_texts():
-        text.set_color('white')
-    ax.get_legend().get_title().set_color('white')
+    # 添加男性柱状图
+    fig.add_trace(go.Bar(
+        name='男',
+        x=gender_ratio.index,
+        y=gender_ratio['男'],
+        marker_color='#3498db',
+        yaxis='y1'
+    ))
     
-    # 去掉背景色
-    ax.set_facecolor('none')
-    fig.patch.set_facecolor('none')
+    # 添加女性柱状图
+    fig.add_trace(go.Bar(
+        name='女',
+        x=gender_ratio.index,
+        y=gender_ratio['女'],
+        marker_color='#e74c3c',
+        yaxis='y1'
+    ))
     
-    # 设置y轴范围为0-100%
-    ax.set_ylim(0, 100)
-    
-    # 移除边框
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    
-    # 去掉所有网格线
-    ax.grid(False)
+    # 更新布局
+    fig.update_layout(
+        title='各专业男女比例',
+        xaxis_title='专业',
+        yaxis_title='比例 (%)',
+        yaxis=dict(range=[0, 100], color='white'),
+        xaxis=dict(color='white'),
+        legend=dict(title='性别', title_font_color='white', font_color='white'),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        barmode='group'
+    )
     
     # 创建两列，将图表和数据显示在同一行
     col1, col2 = st.columns(2)
     
     with col1:
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
     
     with col2:
         # 显示详细比例数据
@@ -401,82 +407,79 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("2. 各专业平均学习时间与成绩对比")
 
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
+
     # 计算各专业的平均学习时长、平均期中成绩和平均期末成绩
     study_performance = df.groupby('专业')[['每周学习时长（小时）', '期中考试分数', '期末考试分数']].mean()
     study_performance.columns = ['平均学习时长', '平均期中成绩', '平均期末成绩']
 
-    # 创建图表
-    fig2, ax2 = plt.subplots(figsize=(12, 6))
-
-    # 设置图表样式
-    fig2.patch.set_facecolor('none')
-    ax2.set_facecolor('none')
-
-    # 绘制柱状图（平均学习时长）
-    bars = ax2.bar(study_performance.index, study_performance['平均学习时长'], color='#1f77b4', alpha=0.8, label='平均学习时长')
-
-    # 设置y轴标签（左侧）
-    ax2.set_ylabel('平均学习时长（小时）', color='white')
-    ax2.tick_params(axis='x', colors='white', rotation=0)
-    ax2.tick_params(axis='y', colors='white')
-
-    # 创建第二个y轴（右侧）用于显示成绩
-    ax3 = ax2.twinx()
-    ax3.set_facecolor('none')
-
-    # 绘制折线图（平均期中成绩）
-    line_mid = ax3.plot(study_performance.index, study_performance['平均期中成绩'], 'o-', color='#ff7f0e', linewidth=2, markersize=6, label='平均期中成绩')
-
-    # 绘制折线图（平均期末成绩）
-    line_final = ax3.plot(study_performance.index, study_performance['平均期末成绩'], 'o-', color='#2ca02c', linewidth=2, markersize=6, label='平均期末成绩')
-
-    # 设置第二个y轴标签
-    ax3.set_ylabel('平均成绩', color='white')
-    ax3.tick_params(axis='y', colors='white')
-
-    # 设置图表标题
-    ax2.set_title('各专业平均学习时间与成绩对比', color='white')
-    ax2.set_xlabel('专业', color='white')
-
-    # 调整x轴标签为横向显示
-    ax2.set_xticklabels(ax2.get_xticklabels(), rotation=0, ha='center')
-
-    # 设置图例（只显示三个指标）
-    from matplotlib.patches import Patch
-    from matplotlib.lines import Line2D
-
-    # 创建自定义图例元素
-    legend_elements = [
-        Patch(facecolor='#1f77b4', edgecolor='#1f77b4', alpha=0.8, label='平均学习时长'),
-        Line2D([0], [0], marker='o', color='#ff7f0e', linestyle='-', linewidth=2, markersize=6, label='平均期中成绩'),
-        Line2D([0], [0], marker='o', color='#2ca02c', linestyle='-', linewidth=2, markersize=6, label='平均期末成绩')
-    ]
-
-    ax2.legend(handles=legend_elements, frameon=False, labelcolor='white', loc='upper left')
-
-    # 移除边框
-    ax2.spines['top'].set_visible(False)
-    ax2.spines['right'].set_visible(False)
-    ax2.spines['left'].set_visible(False)
-    ax2.spines['bottom'].set_visible(False)
-    ax3.spines['top'].set_visible(False)
-    ax3.spines['right'].set_visible(False)
-    ax3.spines['left'].set_visible(False)
-    ax3.spines['bottom'].set_visible(False)
-
-    # 去掉所有网格线
-    ax2.grid(False)
-    ax3.grid(False)
-
-    # 设置y轴范围
-    ax2.set_ylim(20, 21)  # 平均学习时长范围设置为20-21小时
-    ax3.set_ylim(70, 80)  # 平均期中成绩和平均期末成绩范围设置为70-80分
-
+    # 创建图表 - 使用Plotly
+    fig = go.Figure()
+    
+    # 添加平均学习时长柱状图（左侧y轴）
+    fig.add_trace(go.Bar(
+        name='平均学习时长',
+        x=study_performance.index,
+        y=study_performance['平均学习时长'],
+        marker_color='#1f77b4',
+        yaxis='y1'
+    ))
+    
+    # 添加平均期中成绩折线图（右侧y轴）
+    fig.add_trace(go.Scatter(
+        name='平均期中成绩',
+        x=study_performance.index,
+        y=study_performance['平均期中成绩'],
+        mode='lines+markers',
+        marker_color='#ff7f0e',
+        line=dict(width=2),
+        marker=dict(size=6),
+        yaxis='y2'
+    ))
+    
+    # 添加平均期末成绩折线图（右侧y轴）
+    fig.add_trace(go.Scatter(
+        name='平均期末成绩',
+        x=study_performance.index,
+        y=study_performance['平均期末成绩'],
+        mode='lines+markers',
+        marker_color='#2ca02c',
+        line=dict(width=2),
+        marker=dict(size=6),
+        yaxis='y2'
+    ))
+    
+    # 更新布局
+    fig.update_layout(
+        title='各专业平均学习时间与成绩对比',
+        xaxis_title='专业',
+        xaxis=dict(color='white'),
+        yaxis=dict(
+            title='平均学习时长（小时）',
+            color='white',
+            range=[20, 21],
+            showgrid=False
+        ),
+        yaxis2=dict(
+            title='平均成绩',
+            color='white',
+            range=[70, 80],
+            overlaying='y',
+            side='right',
+            showgrid=False
+        ),
+        legend=dict(font_color='white', bgcolor='rgba(0,0,0,0)'),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
+    )
+    
     # 创建两列，将图表和详细数据显示在同一行
     col3, col4 = st.columns(2)
 
     with col3:
-        st.pyplot(fig2)
+        st.plotly_chart(fig, use_container_width=True)
 
     with col4:
         # 显示详细数据
@@ -488,6 +491,10 @@ elif selected_menu == "专业数据分析":
     st.markdown("---")
     st.header("3. 各专业出勤率分析")
 
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
+
     # 计算各专业的平均出勤率
     attendance_data = df.groupby('专业')['上课出勤率'].mean()
     attendance_data = attendance_data.sort_values(ascending=False)
@@ -496,43 +503,37 @@ elif selected_menu == "专业数据分析":
     col5, col6 = st.columns(2)
 
     with col5:
-        # 创建图表
-        fig3, ax4 = plt.subplots(figsize=(12, 6))
+        # 创建图表 - 使用Plotly
+        fig = go.Figure()
         
-        # 设置图表样式
-        fig3.patch.set_facecolor('none')
-        ax4.set_facecolor('none')
+        # 计算颜色值（基于出勤率）
+        max_attendance = max(attendance_data.values)
+        normalized_attendance = attendance_data.values / max_attendance
         
-        # 生成颜色渐变
-        from matplotlib import cm
-        colors = cm.viridis(attendance_data.values / max(attendance_data.values))
+        # 添加柱状图
+        fig.add_trace(go.Bar(
+            x=attendance_data.index,
+            y=attendance_data.values * 100,
+            marker=dict(
+                color=attendance_data.values * 100,
+                colorscale='Viridis'
+            ),
+            yaxis='y1'
+        ))
         
-        # 绘制柱状图
-        bars = ax4.bar(attendance_data.index, attendance_data.values * 100, color=colors)
-        
-        # 设置标题和标签
-        ax4.set_title('各专业平均出勤率', color='white')
-        ax4.set_xlabel('专业', color='white')
-        ax4.set_ylabel('出勤率 (%)', color='white')
-        
-        # 设置坐标轴样式
-        ax4.tick_params(axis='x', colors='white', rotation=0)
-        ax4.tick_params(axis='y', colors='white')
-        
-        # 移除边框
-        ax4.spines['top'].set_visible(False)
-        ax4.spines['right'].set_visible(False)
-        ax4.spines['left'].set_visible(False)
-        ax4.spines['bottom'].set_visible(False)
-        
-        # 去掉网格线
-        ax4.grid(False)
-        
-        # 设置y轴范围
-        ax4.set_ylim(0, 100)
+        # 更新布局
+        fig.update_layout(
+            title='各专业出勤率分析',
+            xaxis_title='专业',
+            xaxis=dict(color='white'),
+            yaxis_title='出勤率 (%)',
+            yaxis=dict(color='white', range=[0, 100], showgrid=False),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         
         # 显示图表
-        st.pyplot(fig3)
+        st.plotly_chart(fig, use_container_width=True)
 
     with col6:
         # 显示出勤率排名
@@ -556,6 +557,10 @@ elif selected_menu == "专业数据分析":
     # 4. 大数据管理专业专项分析
     st.markdown("---")
     st.header("4. 大数据管理专业专项分析")
+
+    # 设置中文字体支持（适用于本地和Cloud环境）
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans', 'Arial Unicode MS', 'WenQuanYi Micro Hei', 'STXihei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False
 
     # 筛选大数据管理专业的数据
     db_major_data = df[df['专业'] == '大数据管理'].copy()
@@ -593,39 +598,31 @@ elif selected_menu == "专业数据分析":
         # 创建图表区域
         st.subheader("大数据管理专业学生数据分析")
         
-        # 创建图表
-        fig4, ax5 = plt.subplots(figsize=(12, 6))
-        
-        # 设置图表样式
-        fig4.patch.set_facecolor('none')
-        ax5.set_facecolor('none')
-        
         # 合并期中考试和期末考试成绩
         all_scores = pd.concat([db_major_data['期中考试分数'], db_major_data['期末考试分数']])
         
-        # 绘制直方图
-        n, bins, patches = ax5.hist(all_scores, bins=20, color='#4CAF50', alpha=0.8)
+        # 创建直方图 - 使用Plotly
+        fig = go.Figure()
+        fig.add_trace(go.Histogram(
+            x=all_scores,
+            nbinsx=20,
+            marker_color='#4CAF50',
+            opacity=0.8
+        ))
         
-        # 设置标题和标签
-        ax5.set_title('大数据管理专业学生成绩分布', color='white')
-        ax5.set_xlabel('成绩', color='white')
-        ax5.set_ylabel('学生人数', color='white')
-        
-        # 设置坐标轴样式
-        ax5.tick_params(axis='x', colors='white')
-        ax5.tick_params(axis='y', colors='white')
-        
-        # 移除边框
-        ax5.spines['top'].set_visible(False)
-        ax5.spines['right'].set_visible(False)
-        ax5.spines['left'].set_visible(False)
-        ax5.spines['bottom'].set_visible(False)
-        
-        # 去掉网格线
-        ax5.grid(False)
+        # 设置图表布局
+        fig.update_layout(
+            title='大数据管理专业学生成绩分布',
+            xaxis_title='成绩',
+            yaxis_title='学生人数',
+            xaxis=dict(color='white'),
+            yaxis=dict(color='white'),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         
         # 显示图表
-        st.pyplot(fig4)
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("暂无大数据管理专业学生数据")
 
